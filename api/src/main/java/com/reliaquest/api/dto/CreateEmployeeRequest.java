@@ -1,4 +1,4 @@
-package com.reliaquest.api.model;
+package com.reliaquest.api.dto;
 
 public class CreateEmployeeRequest {
     private String name;

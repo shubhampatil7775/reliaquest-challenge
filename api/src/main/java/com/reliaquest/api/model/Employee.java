@@ -3,8 +3,10 @@ package com.reliaquest.api.model;
 public class Employee {
     private String id;
     private String name;
-    private String title;
     private int salary;
+    private int age;
+    private String title;
+    private String email;
 
     public String getId() {
         return id;
@@ -22,6 +24,22 @@ public class Employee {
         this.name = name;
     }
 
+    public int getSalary() {
+        return salary;
+    }
+
+    public void setSalary(int salary) {
+        this.salary = salary;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -30,11 +48,11 @@ public class Employee {
         this.title = title;
     }
 
-    public int getSalary() {
-        return salary;
+    public String getEmail() {
+        return email;
     }
 
-    public void setSalary(int salary) {
-        this.salary = salary;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

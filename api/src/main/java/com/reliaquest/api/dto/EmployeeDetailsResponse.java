@@ -1,6 +1,6 @@
-package com.reliaquest.api.model;
+package com.reliaquest.api.dto;
 
-public class ApiEmployee {
+public class EmployeeDetailsResponse {
     private String id;
     private String employee_name;
     private int employee_salary;
@@ -8,7 +8,6 @@ public class ApiEmployee {
     private String employee_title;
     private String employee_email;
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

@@ -1,6 +1,6 @@
 package com.reliaquest.api.controller;
 
-import com.reliaquest.api.model.CreateEmployeeInput;
+import com.reliaquest.api.dto.CreateEmployeeRequest;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
 import java.util.List;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/employee")
-public class EmployeeController implements IEmployeeController<Employee, CreateEmployeeInput> {
+public class EmployeeController implements IEmployeeController<Employee, CreateEmployeeRequest> {
 
     private final EmployeeService employeeService;
 
@@ -56,7 +56,7 @@ public class EmployeeController implements IEmployeeController<Employee, CreateE
 
     @Override
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeInput employeeInput) {
+    public ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeRequest employeeInput) {
         return employeeService.createEmployee(employeeInput);
     }
 
