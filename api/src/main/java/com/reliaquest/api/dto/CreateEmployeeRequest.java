@@ -1,6 +1,6 @@
 package com.reliaquest.api.model;
 
-public class CreateEmployeeInput {
+public class CreateEmployeeRequest {
     private String name;
     private String title;
     private int salary;
