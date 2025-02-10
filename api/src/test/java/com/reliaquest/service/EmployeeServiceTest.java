@@ -12,26 +12,31 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class EmployeeServiceImplTest {
+public class EmployeeServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private EmployeeServiceImpl employeeService;
+    private EmployeeService employeeService;
+
+    @Value("${employee.api.base-url}")
+    private String baseUrl;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        employeeService = new EmployeeService(restTemplate, baseUrl);
     }
 
     @Test
     public void testGetAllEmployees() {
         List<Employee> employees = Arrays.asList(new Employee(), new Employee());
-        when(restTemplate.getForObject("http://localhost:8112/api/v1/employee", List.class))
+        when(restTemplate.getForObject(baseUrl + EmployeeEndpoint.GET_ALL_EMPLOYEES.getPath(), List.class))
                 .thenReturn(employees);
 
         ResponseEntity<List<Employee>> response = employeeService.getAllEmployees();
@@ -41,7 +46,8 @@ public class EmployeeServiceImplTest {
     @Test
     public void testGetEmployeesByNameSearch() {
         List<Employee> employees = Arrays.asList(new Employee(), new Employee());
-        when(restTemplate.getForObject("http://localhost:8112/api/v1/employee/search/John", List.class))
+        when(restTemplate.getForObject(
+                        baseUrl + EmployeeEndpoint.GET_EMPLOYEES_BY_NAME_SEARCH.getPath() + "John", List.class))
                 .thenReturn(employees);
 
         ResponseEntity<List<Employee>> response = employeeService.getEmployeesByNameSearch("John");
@@ -51,7 +57,7 @@ public class EmployeeServiceImplTest {
     @Test
     public void testGetEmployeeById() {
         Employee employee = new Employee();
-        when(restTemplate.getForObject("http://localhost:8112/api/v1/employee/1", Employee.class))
+        when(restTemplate.getForObject(baseUrl + EmployeeEndpoint.GET_EMPLOYEE_BY_ID.getPath() + "1", Employee.class))
                 .thenReturn(employee);
 
         ResponseEntity<Employee> response = employeeService.getEmployeeById("1");
@@ -60,7 +66,7 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void testGetHighestSalaryOfEmployees() {
-        when(restTemplate.getForObject("http://localhost:8112/api/v1/employee/highestSalary", Integer.class))
+        when(restTemplate.getForObject(baseUrl + EmployeeEndpoint.GET_HIGHEST_SALARY.getPath(), Integer.class))
                 .thenReturn(100000);
 
         ResponseEntity<Integer> response = employeeService.getHighestSalaryOfEmployees();
@@ -71,7 +77,7 @@ public class EmployeeServiceImplTest {
     public void testGetTopTenHighestEarningEmployeeNames() {
         List<String> names = Arrays.asList("John", "Jane");
         when(restTemplate.getForObject(
-                        "http://localhost:8112/api/v1/employee/topTenHighestEarningEmployeeNames", List.class))
+                        baseUrl + EmployeeEndpoint.GET_TOP_TEN_HIGHEST_EARNING_EMPLOYEE_NAMES.getPath(), List.class))
                 .thenReturn(names);
 
         ResponseEntity<List<String>> response = employeeService.getTopTenHighestEarningEmployeeNames();
@@ -82,7 +88,7 @@ public class EmployeeServiceImplTest {
     public void testCreateEmployee() {
         Employee employee = new Employee();
         CreateEmployeeInput input = new CreateEmployeeInput();
-        when(restTemplate.postForObject("http://localhost:8112/api/v1/employee", input, Employee.class))
+        when(restTemplate.postForObject(baseUrl + EmployeeEndpoint.CREATE_EMPLOYEE.getPath(), input, Employee.class))
                 .thenReturn(employee);
 
         ResponseEntity<Employee> response = employeeService.createEmployee(input);
@@ -91,7 +97,7 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void testDeleteEmployeeById() {
-        restTemplate.delete("http://localhost:8112/api/v1/employee/1");
+        restTemplate.delete(baseUrl + EmployeeEndpoint.DELETE_EMPLOYEE_BY_ID.getPath() + "1");
         ResponseEntity<String> response = employeeService.deleteEmployeeById("1");
         assertEquals("Employee deleted successfully", response.getBody());
     }
