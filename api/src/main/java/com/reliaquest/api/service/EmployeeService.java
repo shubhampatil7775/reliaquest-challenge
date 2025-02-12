@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -37,7 +35,7 @@ public class EmployeeService {
         this.objectMapper = objectMapper;
     }
 
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public List<Employee> getAllEmployees() {
         String url = baseUrl + EmployeeEndpoint.GET_ALL_EMPLOYEES.getPath();
         logger.info("Fetching all employees from URL: {}", url);
         String employeesDetails = restTemplate.getForObject(url, String.class);
@@ -49,20 +47,24 @@ public class EmployeeService {
             logger.error("Error deserializing response: {}", e.getMessage());
         }
         logger.info("Fetched {} employees", employees.size());
-        return ResponseEntity.ok(employees);
+        return employees;
     }
 
-    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(String name) {
+    public List<Employee> getEmployeesByNameSearch(String name) {
         logger.info("Searching employees by name: {}", name);
-        ResponseEntity<List<Employee>> allEmployeesResponse = getAllEmployees();
-        List<Employee> filteredEmployees = allEmployeesResponse.getBody().stream()
+        List<Employee> allEmployees = getAllEmployees();
+        List<Employee> filteredEmployees = allEmployees.stream()
                 .filter(employee -> employee.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         logger.info("Found {} employees with search string: {}", filteredEmployees.size(), name);
-        return ResponseEntity.ok(filteredEmployees);
+        if(filteredEmployees.size() == 0) {
+            logger.info("No employees found with search string: {}", name);
+            return null;
+        }
+        return filteredEmployees;
     }
 
-    public ResponseEntity<Employee> getEmployeeById(String id) {
+    public Employee getEmployeeById(String id) {
         String url = baseUrl + EmployeeEndpoint.GET_EMPLOYEE_BY_ID.getPath() + id;
         logger.info("Fetching employee by ID from URL: {}", url);
         try {
@@ -74,43 +76,41 @@ public class EmployeeService {
                 EmployeeDetailsResponse employeeDetails = employeeResponse.getData();
                 Employee employee = EmployeeMapper.mapToEmployee(employeeDetails);
                 logger.info("Fetched employee: {}", employee.getId());
-                return ResponseEntity.ok(employee);
+                return employee;
             } else {
                 logger.info("Employee not found with ID: {}", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return null;
             }
         } catch (HttpClientErrorException.NotFound e) {
             logger.info("Employee not found with ID: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return null;
         } catch (Exception e) {
             logger.error("Error fetching employee by ID: {}", id, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return null;
         }
     }
 
-    public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
+    public Integer getHighestSalaryOfEmployees() {
         logger.info("Fetching all employees to determine highest salary");
-        ResponseEntity<List<Employee>> allEmployeesResponse = getAllEmployees();
-        List<Employee> employees = allEmployeesResponse.getBody();
+        List<Employee> employees = getAllEmployees();
         if (employees == null || employees.isEmpty()) {
             logger.info("No employees found");
-            return ResponseEntity.ok(0);
+            return 0;
         }
         Integer highestSalary = employees.stream()
                 .max(Comparator.comparingInt(Employee::getSalary))
                 .map(Employee::getSalary)
                 .orElse(0);
         logger.info("Highest salary fetched: {}", highestSalary);
-        return ResponseEntity.ok(highestSalary);
+        return highestSalary;
     }
 
-    public ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
+    public List<String> getTopTenHighestEarningEmployeeNames() {
         logger.info("Fetching all employees to determine top 10 highest earning employee names");
-        ResponseEntity<List<Employee>> allEmployeesResponse = getAllEmployees();
-        List<Employee> employees = allEmployeesResponse.getBody();
+        List<Employee> employees = getAllEmployees();
         if (employees == null || employees.isEmpty()) {
             logger.info("No employees found");
-            return ResponseEntity.ok(List.of());
+            return List.of();
         }
         List<String> topTenHighestEarningEmployeeNames = employees.stream()
                 .sorted(Comparator.comparingInt(Employee::getSalary).reversed())
@@ -118,10 +118,10 @@ public class EmployeeService {
                 .map(Employee::getName)
                 .collect(Collectors.toList());
         logger.info("Fetched top 10 highest earning employee names: {}", topTenHighestEarningEmployeeNames);
-        return ResponseEntity.ok(topTenHighestEarningEmployeeNames);
+        return topTenHighestEarningEmployeeNames;
     }
 
-    public ResponseEntity<Employee> createEmployee(CreateEmployeeRequest employeeInput) {
+    public Employee createEmployee(CreateEmployeeRequest employeeInput) {
         String url = baseUrl + EmployeeEndpoint.CREATE_EMPLOYEE.getPath();
         logger.info("Creating employee with input email: {}", employeeInput.getEmail());
         GetSpecificEmployeeResponse employeeResponse =
@@ -133,23 +133,22 @@ public class EmployeeService {
                 Employee employee = EmployeeMapper.mapToEmployee(employeeDetails);
 
                 logger.info("Created employee: {}", employee.getId());
-                return ResponseEntity.ok(employee);
+                return employee;
             } else {
                 logger.info("Error creating employee for: {}", employeeInput.getName());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+                return null;
             }
         } catch (Exception e) {
             logger.error("Error creating employee for: {}", employeeInput.getName(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return null;
         }
     }
 
-    public ResponseEntity<String> deleteEmployeeById(String id) {
-        ResponseEntity<Employee> employeeResponse = getEmployeeById(id);
-        Employee employee = employeeResponse.getBody();
+    public String deleteEmployeeById(String id) {
+        Employee employee = getEmployeeById(id);
         if (employee == null) {
             logger.error("Employee not found with ID: {}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee not found");
+            return "Employee not found";
         }
 
         String name = employee.getName();
@@ -167,17 +166,17 @@ public class EmployeeService {
 
             if (isDeleted) {
                 logger.info("Deleted employee with name: {}", name);
-                return ResponseEntity.ok("Employee deleted successfully");
+                return "Employee deleted successfully";
             } else {
-                logger.error("Employee already deleted or does not exists: {}", name);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete employee");
+                logger.error("Employee already deleted or does not exist: {}", name);
+                return "Failed to delete employee";
             }
         } catch (HttpServerErrorException.InternalServerError e) {
             logger.error("Internal server error while deleting employee with name: {}", name);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+            return "Internal server error";
         } catch (Exception e) {
             logger.error("Error deleting employee by name: {}", name, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting employee");
+            return "Error deleting employee";
         }
     }
 }

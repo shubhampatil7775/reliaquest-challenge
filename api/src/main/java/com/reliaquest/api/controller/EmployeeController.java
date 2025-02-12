@@ -5,6 +5,7 @@ import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,42 +23,67 @@ public class EmployeeController implements IEmployeeController<Employee, CreateE
     @Override
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        return employeeService.getAllEmployees();
+        List<Employee> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
     @Override
     @GetMapping("/search/{name}")
     public ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String name) {
-        return employeeService.getEmployeesByNameSearch(name);
+        List<Employee> employees = employeeService.getEmployeesByNameSearch(name);
+        if (employees != null) {
+            return ResponseEntity.ok(employees);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable String id) {
-        return employeeService.getEmployeeById(id);
+        Employee employee = employeeService.getEmployeeById(id);
+        if (employee != null) {
+            return ResponseEntity.ok(employee);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @Override
     @GetMapping("/highest-salary")
     public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
-        return employeeService.getHighestSalaryOfEmployees();
+        Integer highestSalary = employeeService.getHighestSalaryOfEmployees();
+        return ResponseEntity.ok(highestSalary);
     }
 
     @Override
     @GetMapping("/top-ten-highest-earners")
     public ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
-        return employeeService.getTopTenHighestEarningEmployeeNames();
+        List<String> topTenHighestEarningEmployeeNames = employeeService.getTopTenHighestEarningEmployeeNames();
+        return ResponseEntity.ok(topTenHighestEarningEmployeeNames);
     }
 
     @Override
     @PostMapping
     public ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeRequest employeeInput) {
-        return employeeService.createEmployee(employeeInput);
+        Employee employee = employeeService.createEmployee(employeeInput);
+        if (employee != null) {
+            return ResponseEntity.ok(employee);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteEmployeeById(@PathVariable String id) {
-        return employeeService.deleteEmployeeById(id);
+        String result = employeeService.deleteEmployeeById(id);
+        if ("Employee deleted successfully".equals(result)) {
+            return ResponseEntity.ok(result);
+        } else if ("Employee not found".equals(result)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
     }
 }
