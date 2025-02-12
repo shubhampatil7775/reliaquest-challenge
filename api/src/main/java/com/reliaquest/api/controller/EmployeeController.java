@@ -3,6 +3,7 @@ package com.reliaquest.api.controller;
 import com.reliaquest.api.dto.CreateEmployeeRequest;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -65,7 +66,7 @@ public class EmployeeController implements IEmployeeController<Employee, CreateE
 
     @Override
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeRequest employeeInput) {
+    public ResponseEntity<Employee> createEmployee(@Valid @RequestBody CreateEmployeeRequest employeeInput) {
         Employee employee = employeeService.createEmployee(employeeInput);
         if (employee != null) {
             return ResponseEntity.ok(employee);

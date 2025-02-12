@@ -57,7 +57,7 @@ public class EmployeeService {
                 .filter(employee -> employee.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         logger.info("Found {} employees with search string: {}", filteredEmployees.size(), name);
-        if(filteredEmployees.size() == 0) {
+        if (filteredEmployees.size() == 0) {
             logger.info("No employees found with search string: {}", name);
             return null;
         }
