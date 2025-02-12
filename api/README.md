@@ -13,6 +13,15 @@ Please keep the following in mind when doing this assessment:
 ### Endpoints to implement
 
 _See `com.reliaquest.api.controller.IEmployeeController` for details._
+ 
+### Curl for implemented Apis
+    1. getAllEmployees -> curl --location 'http://localhost:8111/employee'
+    2. getEmployeesByNameSearch -> curl --location 'http://localhost:8111/employee/search/shubham'
+    3. getEmployeeById -> curl --location 'http://localhost:8111/employee/2a5dd95f-97a8-4001-8966-a4e7d4d32d95'
+    4. getHighestSalaryOfEmployees -> curl --location 'http://localhost:8111/employee/highest-salary'
+    5. getTop10HighestEarningEmployeeNames -> curl --location 'http://localhost:8111/employee/top-ten-highest-earners'
+    6. createEmployee -> curl --location 'http://localhost:8111/employee' \ --header 'Content-Type: application/json' \ --data-raw '{ "name": "yash patil", "title": "Software Engineer", "salary": 100000, "age": 30, "email": "shubh@example.com" }'
+    7. deleteEmployeeById -> curl --location --request DELETE 'http://localhost:8111/employee/6d9af443-b999-4a09-b78d-47fb37df7505'
 
 getAllEmployees()
 

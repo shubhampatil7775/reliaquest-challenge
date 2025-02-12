@@ -22,7 +22,6 @@ public class CreateEmployeeRequest {
     @NotBlank
     private String email;
 
-    // Getters and setters
     public String getName() {
         return name;
     }
