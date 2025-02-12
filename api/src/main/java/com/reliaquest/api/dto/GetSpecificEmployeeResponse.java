@@ -1,16 +1,14 @@
 package com.reliaquest.api.dto;
 
-import java.util.List;
-
-public class EmployeeResponse {
-    private List<EmployeeDetailsResponse> data;
+public class GetSpecificEmployeeResponse {
+    private EmployeeDetailsResponse data;
     private String status;
 
-    public List<EmployeeDetailsResponse> getData() {
+    public EmployeeDetailsResponse getData() {
         return data;
     }
 
-    public void setData(List<EmployeeDetailsResponse> data) {
+    public void setData(EmployeeDetailsResponse data) {
         this.data = data;
     }
 

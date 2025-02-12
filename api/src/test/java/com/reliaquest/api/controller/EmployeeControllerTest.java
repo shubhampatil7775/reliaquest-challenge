@@ -3,7 +3,7 @@ package com.reliaquest.api.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import com.reliaquest.api.model.CreateEmployeeInput;
+import com.reliaquest.api.dto.CreateEmployeeRequest;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-public class EmployeeControllerTest {
+class EmployeeControllerTest {
 
     @Mock
     private EmployeeService employeeService;
@@ -75,7 +75,7 @@ public class EmployeeControllerTest {
     @Test
     public void testCreateEmployee() {
         Employee employee = new Employee();
-        CreateEmployeeInput input = new CreateEmployeeInput();
+        CreateEmployeeRequest input = new CreateEmployeeRequest();
         when(employeeService.createEmployee(input)).thenReturn(ResponseEntity.ok(employee));
 
         ResponseEntity<Employee> response = employeeController.createEmployee(input);
