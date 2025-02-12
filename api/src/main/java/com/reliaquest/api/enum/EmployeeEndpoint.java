@@ -7,7 +7,7 @@ public enum EmployeeEndpoint {
     GET_HIGHEST_SALARY("/api/v1/employee/highestSalary"),
     GET_TOP_TEN_HIGHEST_EARNING_EMPLOYEE_NAMES("/api/v1/employee/topTenHighestEarningEmployeeNames"),
     CREATE_EMPLOYEE("/api/v1/employee"),
-    DELETE_EMPLOYEE_BY_ID("/api/v1/employee/");
+    DELETE_EMPLOYEE_BY_ID("/api/v1/employee");
 
     private final String path;
 
