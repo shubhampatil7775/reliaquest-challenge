@@ -1,10 +1,15 @@
 package com.reliaquest.api.dto;
 
 public class CreateEmployeeRequest {
+    
     private String name;
+
     private String title;
+
     private int salary;
+
     private int age;
+
     private String email;
 
     public String getName() {

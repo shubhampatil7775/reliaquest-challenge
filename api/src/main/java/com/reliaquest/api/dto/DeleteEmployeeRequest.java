@@ -1,6 +1,7 @@
 package com.reliaquest.api.dto;
 
 public class DeleteEmployeeRequest {
+    
     private String name;
 
     public String getName() {

@@ -1,17 +1,11 @@
 package com.reliaquest.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.reliaquest.api.dto.CreateEmployeeRequest;
-import com.reliaquest.api.dto.DeleteEmployeeRequest;
-import com.reliaquest.api.dto.DeleteEmployeeResponse;
-import com.reliaquest.api.dto.EmployeeDetailsResponse;
-import com.reliaquest.api.dto.GetAllEmployeeResponse;
-import com.reliaquest.api.dto.GetSpecificEmployeeResponse;
-import com.reliaquest.api.mapper.EmployeeMapper;
+import com.reliaquest.api.dto.*;
+import com.reliaquest.api.enums.EmployeeEndpoint;
 import com.reliaquest.api.model.Employee;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +72,7 @@ public class EmployeeService {
 
             if (employeeResponse.getData() != null) {
                 EmployeeDetailsResponse employeeDetails = employeeResponse.getData();
-                Employee employee = new Employee();
-                employee.setId(employeeDetails.getId());
-                employee.setName(employeeDetails.getEmployee_name());
-                employee.setSalary(employeeDetails.getEmployee_salary());
-                employee.setAge(employeeDetails.getEmployee_age());
-                employee.setTitle(employeeDetails.getEmployee_title());
-                employee.setEmail(employeeDetails.getEmployee_email());
-
+                Employee employee = EmployeeMapper.mapToEmployee(employeeDetails);
                 logger.info("Fetched employee: {}", employee.getId());
                 return ResponseEntity.ok(employee);
             } else {
@@ -142,13 +129,7 @@ public class EmployeeService {
         try {
             if (employeeResponse.getData() != null) {
                 EmployeeDetailsResponse employeeDetails = employeeResponse.getData();
-                Employee employee = new Employee();
-                employee.setId(employeeDetails.getId());
-                employee.setName(employeeDetails.getEmployee_name());
-                employee.setSalary(employeeDetails.getEmployee_salary());
-                employee.setAge(employeeDetails.getEmployee_age());
-                employee.setTitle(employeeDetails.getEmployee_title());
-                employee.setEmail(employeeDetails.getEmployee_email());
+                Employee employee = EmployeeMapper.mapToEmployee(employeeDetails);
 
                 logger.info("Created employee: {}", employee.getId());
                 return ResponseEntity.ok(employee);

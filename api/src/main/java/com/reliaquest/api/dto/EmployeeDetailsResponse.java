@@ -1,11 +1,17 @@
 package com.reliaquest.api.dto;
 
 public class EmployeeDetailsResponse {
+
     private String id;
+
     private String employee_name;
+
     private int employee_salary;
+
     private int employee_age;
+
     private String employee_title;
+    
     private String employee_email;
 
     public String getId() {

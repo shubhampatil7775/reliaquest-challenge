@@ -1,7 +1,9 @@
 package com.reliaquest.api.dto;
 
 public class GetAllEmployeeResponse {
+
     private EmployeeDetailsResponse[] data;
+    
     private String status;
 
     public EmployeeDetailsResponse[] getData() {

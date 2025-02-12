@@ -1,7 +1,9 @@
 package com.reliaquest.api.dto;
 
 public class DeleteEmployeeResponse {
+
     private boolean data;
+    
     private String status;
 
     public boolean getData() {
