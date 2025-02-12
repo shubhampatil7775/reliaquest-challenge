@@ -11,8 +11,8 @@ public class EmployeeMapper {
 
     public static List<Employee> mapToEmployeeList(GetAllEmployeeResponse response) {
         return Arrays.stream(response.getData())
-        .map(EmployeeMapper::mapToEmployee)
-        .collect(Collectors.toList());
+                .map(EmployeeMapper::mapToEmployee)
+                .collect(Collectors.toList());
     }
 
     public static Employee mapToEmployee(EmployeeDetailsResponse employeeDetails) {

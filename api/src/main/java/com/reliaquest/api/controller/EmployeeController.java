@@ -4,19 +4,15 @@ import com.reliaquest.api.dto.CreateEmployeeRequest;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v2/employee")
+@RequestMapping("/employee")
 public class EmployeeController implements IEmployeeController<Employee, CreateEmployeeRequest> {
 
     private final EmployeeService employeeService;
-
-    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
     public EmployeeController(EmployeeService employeeService) {
@@ -26,14 +22,13 @@ public class EmployeeController implements IEmployeeController<Employee, CreateE
     @Override
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        logger.info("Fetching all employees from controller");
         return employeeService.getAllEmployees();
     }
 
     @Override
-    @GetMapping("/search/{searchString}")
-    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString) {
-        return employeeService.getEmployeesByNameSearch(searchString);
+    @GetMapping("/search/{name}")
+    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String name) {
+        return employeeService.getEmployeesByNameSearch(name);
     }
 
     @Override
@@ -43,13 +38,13 @@ public class EmployeeController implements IEmployeeController<Employee, CreateE
     }
 
     @Override
-    @GetMapping("/highestSalary")
+    @GetMapping("/highest-salary")
     public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
         return employeeService.getHighestSalaryOfEmployees();
     }
 
     @Override
-    @GetMapping("/topTenHighestEarningEmployeeNames")
+    @GetMapping("/top-ten-highest-earners")
     public ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
         return employeeService.getTopTenHighestEarningEmployeeNames();
     }

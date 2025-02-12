@@ -40,10 +40,10 @@ public class EmployeeService {
     public ResponseEntity<List<Employee>> getAllEmployees() {
         String url = baseUrl + EmployeeEndpoint.GET_ALL_EMPLOYEES.getPath();
         logger.info("Fetching all employees from URL: {}", url);
-        String jsonResponse = restTemplate.getForObject(url, String.class);
+        String employeesDetails = restTemplate.getForObject(url, String.class);
         List<Employee> employees = null;
         try {
-            GetAllEmployeeResponse response = objectMapper.readValue(jsonResponse, GetAllEmployeeResponse.class);
+            GetAllEmployeeResponse response = objectMapper.readValue(employeesDetails, GetAllEmployeeResponse.class);
             employees = EmployeeMapper.mapToEmployeeList(response);
         } catch (IOException e) {
             logger.error("Error deserializing response: {}", e.getMessage());
@@ -52,13 +52,13 @@ public class EmployeeService {
         return ResponseEntity.ok(employees);
     }
 
-    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(String searchString) {
-        logger.info("Searching employees by name: {}", searchString);
+    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(String name) {
+        logger.info("Searching employees by name: {}", name);
         ResponseEntity<List<Employee>> allEmployeesResponse = getAllEmployees();
         List<Employee> filteredEmployees = allEmployeesResponse.getBody().stream()
-                .filter(employee -> employee.getName().toLowerCase().contains(searchString.toLowerCase()))
+                .filter(employee -> employee.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
-        logger.info("Found {} employees with search string: {}", filteredEmployees.size(), searchString);
+        logger.info("Found {} employees with search string: {}", filteredEmployees.size(), name);
         return ResponseEntity.ok(filteredEmployees);
     }
 
@@ -124,7 +124,8 @@ public class EmployeeService {
     public ResponseEntity<Employee> createEmployee(CreateEmployeeRequest employeeInput) {
         String url = baseUrl + EmployeeEndpoint.CREATE_EMPLOYEE.getPath();
         logger.info("Creating employee with input email: {}", employeeInput.getEmail());
-        GetSpecificEmployeeResponse employeeResponse = restTemplate.postForObject(url, employeeInput, GetSpecificEmployeeResponse.class);
+        GetSpecificEmployeeResponse employeeResponse =
+                restTemplate.postForObject(url, employeeInput, GetSpecificEmployeeResponse.class);
 
         try {
             if (employeeResponse.getData() != null) {
@@ -134,11 +135,11 @@ public class EmployeeService {
                 logger.info("Created employee: {}", employee.getId());
                 return ResponseEntity.ok(employee);
             } else {
-                logger.info("Error creating employee by ID: {}", employeeInput.getEmail());
+                logger.info("Error creating employee for: {}", employeeInput.getName());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
-        }catch (Exception e) {
-            logger.error("Error creating employee by ID: {}", employeeInput.getEmail(), e);
+        } catch (Exception e) {
+            logger.error("Error creating employee for: {}", employeeInput.getName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -158,7 +159,9 @@ public class EmployeeService {
         input.setName(name);
         HttpEntity<DeleteEmployeeRequest> request = new HttpEntity<>(input);
         try {
-            String jsonResponse = restTemplate.exchange(url, HttpMethod.DELETE, request, String.class).getBody();
+            String jsonResponse = restTemplate
+                    .exchange(url, HttpMethod.DELETE, request, String.class)
+                    .getBody();
             DeleteEmployeeResponse deleteResponse = objectMapper.readValue(jsonResponse, DeleteEmployeeResponse.class);
             Boolean isDeleted = deleteResponse.getData();
 
@@ -166,7 +169,7 @@ public class EmployeeService {
                 logger.info("Deleted employee with name: {}", name);
                 return ResponseEntity.ok("Employee deleted successfully");
             } else {
-                logger.error("Failed to delete employee with name: {}", name);
+                logger.error("Employee already deleted or does not exists: {}", name);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete employee");
             }
         } catch (HttpServerErrorException.InternalServerError e) {
